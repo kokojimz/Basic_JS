@@ -785,7 +785,7 @@ try {
 
 //callback Asynchronous javascript
 //Request data menggunakan ajax dari jquery
-console.log('mulai');
+console.log('\nmulai');
 $.ajax({
   url: 'data/mahasiswa.json',
   success: (mhs) => {
@@ -799,3 +799,69 @@ $.ajax({
   }
 });
 console.log('selesai');
+
+//promise
+let ditepati = true;
+const janji1 = new Promise((resolve,reject) => {
+  if (ditepati){
+    resolve('data/mahasiswa.json');
+  }else{
+    reject('ditepati not true');
+  }
+});
+
+console.log('\nmulai');
+janji1
+  .then(response => console.log(response))
+  .catch(response => console.log(response));
+console.log('selesai');
+
+//promise setelah beberapa waktu (Asynchronous)
+const janji2 = new Promise((resolve,reject) => {
+  if (ditepati){
+    setTimeout(() => {
+      resolve('data/mahasiswa.json');
+    },2000);
+  }else{
+    setTimeout(() => {
+      reject('ditepati not true');
+    },2000);
+  }
+});
+console.log('\nmulai');
+// console.log(janji2.then(() => console.log(janji2)));
+janji2
+  .finally(() => console.log('selesai menunggu'))
+  .then(response => console.log(response))
+  .catch(response => console.log(response));
+console.log('selesai\n\n');
+
+//promise.all()
+const film = new Promise((resolve) => {
+  setTimeout(() => {
+    resolve([{
+      judul: 'Avengers',
+      sutradara: 'Reynaldy Marchell',
+      durasi: 95
+    }]);
+  },1000);
+});
+
+const cuaca = new Promise((resolve) => {
+  setTimeout(() => {
+    resolve([{
+      kota: 'Bandung',
+      Temperatur:'30'
+    }]);
+  },500);
+});
+
+// film.then(response => console.log(response));
+// cuaca.then(response => console.log(response));
+
+Promise.all([film,cuaca])
+  .then((response) => {
+    const[film,cuaca] = response;
+    console.log(film);
+    console.log(cuaca);
+  });
