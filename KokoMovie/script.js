@@ -31,34 +31,63 @@ const showMovieDetail = result => {
             </div>`
 };
 
-$('.search-button').on('click',function(){
-    $.ajax({
-        url: 'http://www.omdbapi.com/?apikey=a3ba7855&s=' + $('.input-keyword').val(),
-        success: result => {
-            const movies = result.Search;
-            let card = '';
-            movies.forEach(element => {
-                card += showCards(element);
-            });
-            $('.movie-container').html(card);
+// Request API ,menggunakan ajax jquery
+// $('.search-button').on('click',function(){
+//     $.ajax({
+//         url: 'http://www.omdbapi.com/?apikey=a3ba7855&s=' + $('.input-keyword').val(),
+//         success: result => {
+//             const movies = result.Search;
+//             let card = '';
+//             movies.forEach(element => {
+//                 card += showCards(element);
+//             });
+//             $('.movie-container').html(card);
             
     
+//             //ketika tombol di klik
+//             $('.modal-detail-button').on('click', function(){
+//                 $.ajax({
+//                     url: 'http://www.omdbapi.com/?apikey=a3ba7855&i=' + $(this).data("imdbid"),
+//                     success: result => {
+//                         const movieDetail = showMovieDetail(result);     
+//                         $('.modal-body').html(movieDetail);
+//                     },
+//                     error: (e) => {
+//                         console.log(e.responseText);
+//                     }
+//                 });
+//             });
+//         },
+//         error: (e) => {
+//             console.log(e.responseText);
+//         }
+//     });
+// });
+
+// Request API menggunakan fetch
+const searchButton = document.querySelector('.search-button');
+searchButton.addEventListener('click',function(){
+
+    const inputKeyword = document.querySelector('.input-keyword');
+    fetch('http://www.omdbapi.com/?apikey=a3ba7855&s=' + inputKeyword.value)
+        .then(response => response.json())
+        .then(response => {
+            const movie = response.Search;
+            let card = '';
+            movie.forEach(element => {
+                card+= showCards(element);
+            });
+            document.querySelector('.movie-container').innerHTML = card;
+
             //ketika tombol di klik
-            $('.modal-detail-button').on('click', function(){
-                $.ajax({
-                    url: 'http://www.omdbapi.com/?apikey=a3ba7855&i=' + $(this).data("imdbid"),
-                    success: result => {
-                        const movieDetail = showMovieDetail(result);     
-                        $('.modal-body').html(movieDetail);
-                    },
-                    error: (e) => {
-                        console.log(e.responseText);
-                    }
+            const modalDetailButtons = document.querySelectorAll('.modal-detail-button');
+            modalDetailButtons.forEach(btn => {
+                btn.addEventListener('click',function(){
+                    const imdbid = this.dataset.imdbid;
+                    fetch('http://www.omdbapi.com/?apikey=a3ba7855&i=' + imdbid)
+                        .then(response => response.json())
+                        .then(result => document.querySelector('.modal-body').innerHTML = showMovieDetail(result));
                 });
             });
-        },
-        error: (e) => {
-            console.log(e.responseText);
-        }
-    });
+        });
 });
