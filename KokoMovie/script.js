@@ -2,17 +2,25 @@
 //Main code
 const searchButton = document.querySelector('.search-button');
 searchButton.addEventListener('click', async function(){
-    const inputKeyword = document.querySelector('.input-keyword');
-    const movies = await getMovies(inputKeyword.value);
-    updateUI(movies);
+    try{
+        const inputKeyword = document.querySelector('.input-keyword');
+        const movies = await getMovies(inputKeyword.value);
+        updateUI(movies);
+    }catch(err){
+        alert(err);
+    }
 });
 
 //event binding
 document.addEventListener('click', async function(e){
-    if(e.target.classList.contains('modal-detail-button')){
-        const imdbid = e.target.dataset.imdbid;
-        const detailMovie = await getDetailsMovie(imdbid);
-        updateDetail(detailMovie); 
+    try{
+        if(e.target.classList.contains('modal-detail-button')){
+            const imdbid = e.target.dataset.imdbid;
+            const detailMovie = await getDetailsMovie(imdbid);
+            updateDetail(detailMovie); 
+        }
+    }catch(err){
+        alert(err);
     }
 });
 
@@ -32,14 +40,29 @@ function updateUI(response){
 
 function getDetailsMovie(imdbid){
     return fetch('http://www.omdbapi.com/?apikey=a3ba7855&i=' + imdbid)
-        .then(response => response.json())
+        .then(response => {
+            if(!response.ok){
+                throw new Error(response.statusText);
+            }
+            return response.json();
+        })
         .then(result => result);
 }
 
 function getMovies(keyword){
     return fetch('http://www.omdbapi.com/?apikey=a3ba7855&s=' + keyword)
-        .then(response => response.json())
-        .then(response => response);
+        .then(response => {
+            if(!response.ok){
+                throw new Error(response.statusText);
+            }
+            return response.json();
+        })
+        .then(response => {
+            if(response.Response === "False"){
+                throw new Error(response.Error);
+            }
+            return response;
+        });
 }
 
 function showCards (element) {
